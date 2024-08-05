@@ -1,7 +1,7 @@
 import axios from "axios";
-
+const baseURL = "http://localhost:5001/api/v1/"
 const api = axios.create({
-  baseURL: "http://localhost:5001/api/v1/",
+  baseURL: baseURL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -20,26 +20,12 @@ api.interceptors.request.use(
   }
 );
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (
-      error.response &&
-      (error.response.status === 401 || error.response.status === 403)
-    ) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    }
-    return Promise.reject(error);
-  }
-);
-
 export const apiAuth = async (url, params = {}) => {
   try {
     const response = await api.get(url, { params });
     return response;
   } catch (error) {
-    if (error.response.status === 403) {
+    if (error.response.status === 403 || error.response.status === 403) {
       return { status: error.response.status };
     }
   }
@@ -59,21 +45,19 @@ export const apiGet = async (url, params = {}) => {
 
 export const apiRefresh = async (url) => {
   try {
-    api.interceptors.request.use(
-      (req) => {
-        const token = localStorage.getItem("refreshtoken");
-        if (token) {
-          req.headers["Authorization"] = `Bearer ${token}`;
-        }
+    const token = localStorage.getItem("refreshtoken")
+    const userid = localStorage.getItem("userid")
+    const response = await axios.get(`${baseURL}${url}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
-    const response = await api.get(url);
-    return response.data;
+      params: {userid:userid} 
+    })
+    return  response.data
   } catch (error) {
     if (error.response.status === 403) {
-      // window.location.href = "/login";
+      return { status: error.response.status };
     }
-    throw error;
   }
 };
 

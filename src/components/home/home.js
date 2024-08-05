@@ -55,6 +55,7 @@ function Home() {
         message: error.response?.data?.message || "An error occurred",
         severity: "error",
       });
+      navigate("/login")
     } finally {
       setLoading(false);
     }

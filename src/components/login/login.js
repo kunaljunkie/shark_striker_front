@@ -3,7 +3,7 @@ import "./login.css";
 import CustomSnackbar from "../snackbar/snackbar";
 import Loading from "../loading/loading";
 import { useNavigate } from "react-router-dom";
-import { apiAuth, apiPost } from "../services/service";
+import { apiAuth, apiPost, apiRefresh } from "../services/service";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -27,23 +27,29 @@ function LoginForm() {
     if (userid && token) {
       handleAuth(userid)
     } 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+  }, [navigate]);
 
 
   const handleAuth =async (userid)=>{
     setLoading(true)
     let param = {userid:userid} 
     const check = await apiAuth("user-check",param)
+    console.log(check)
     if(check.status===200){
       navigate("/home")
+      // console.log("home")
     }else {
       setSnackbar({
         open: true,
         message: "SESSION EXPIRED: Login again",
         severity: "success",
       });
-
+      const data =  await apiRefresh("/new-session")
+      if(data.token){
+        localStorage.setItem("token", data.token);
+        navigate("/home")
+      }
     }
     setLoading(false)
   }
@@ -78,7 +84,7 @@ function LoginForm() {
         const response = await apiPost('login', { email, password });
         localStorage.setItem("userid", response.user._id);
         localStorage.setItem("token", response.token);
-        localStorage.setItem("refreshtoken", response.token);
+        localStorage.setItem("refreshtoken", response.refreshToken);
 
         setSnackbar({
           open: true,
