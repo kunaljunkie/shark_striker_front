@@ -35,16 +35,9 @@ function LoginForm() {
     setLoading(true)
     let param = {userid:userid} 
     const check = await apiAuth("user-check",param)
-    console.log(check)
     if(check.status===200){
       navigate("/home")
-      // console.log("home")
     }else {
-      setSnackbar({
-        open: true,
-        message: "SESSION EXPIRED: Login again",
-        severity: "success",
-      });
       const data =  await apiRefresh("/new-session")
       if(data.token){
         localStorage.setItem("token", data.token);
@@ -88,7 +81,7 @@ function LoginForm() {
 
         setSnackbar({
           open: true,
-          message: response.message || "Logged in successfully!",
+          message: response.message,
           severity: "success",
         });
 
