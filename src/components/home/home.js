@@ -8,7 +8,7 @@ import UserActivityChart from "../charts/userActivity";
 import { apiGet } from "../services/service";
 import CustomSnackbar from "../snackbar/snackbar";
 import "./home.css";
-import resellerData from "../services/reseller.json";
+import defaultTags from "../services/shark_strike.json";
 
 function Home() {
   const [data, setData] = useState(null);
@@ -53,7 +53,7 @@ function Home() {
           useremail: useremail,
         });
       } else {
-        setData({ ...resellerData, username: username, useremail: useremail });
+        setData({ ...defaultTags, username: username, useremail: useremail });
       }
       setLoading(false);
     } catch (error) {
