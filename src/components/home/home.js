@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "../loading/loading";
-import "./home.css";
 import ThreatDetectionChart from "../charts/threatDetection";
 import IncidentReportsChart from "../charts/incidenReport";
 import VulnerabilityScansChart from "../charts/vulnerabilityscan";
 import UserActivityChart from "../charts/userActivity";
 import { apiGet } from "../services/service";
 import CustomSnackbar from "../snackbar/snackbar";
+import "./home.css";
+import resellerData from "../services/reseller.json";
 
 function Home() {
   const [data, setData] = useState(null);
@@ -24,14 +25,16 @@ function Home() {
   useEffect(() => {
     const userid = localStorage.getItem("userid");
     const token = localStorage.getItem("token");
+    const username = localStorage.getItem("name");
+    const useremail = localStorage.getItem("email");
     if (userid && token) {
-      fetchData(userid);
+      fetchData(userid, username, useremail);
     } else {
       navigate("/login");
     }
   }, [navigate]);
 
-  const fetchData = async (userid) => {
+  const fetchData = async (userid, username, useremail) => {
     try {
       setLoading(true);
       let param = { userid: userid };
@@ -44,9 +47,13 @@ function Home() {
 
       const response = await apiGet("get-reseller", param);
       if (response && response.reseller) {
-        setData(response.reseller);
+        setData({
+          ...response.reseller,
+          username: username,
+          useremail: useremail,
+        });
       } else {
-        setData(null);
+        setData({ ...resellerData, username: username, useremail: useremail });
       }
       setLoading(false);
     } catch (error) {
@@ -55,11 +62,21 @@ function Home() {
         message: error.response?.data?.message || "An error occurred",
         severity: "error",
       });
-      navigate("/login")
+      navigate("/login");
     } finally {
       setLoading(false);
     }
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("userid");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshtoken");
+    localStorage.removeItem("name");
+    localStorage.removeItem("email");
+    navigate("/login");
+  };
+
   const handleCloseSnackbar = () =>
     setSnackbar((prev) => ({ ...prev, open: false }));
 
@@ -82,6 +99,11 @@ function Home() {
               </li>
               <li>
                 <Link to={data?.website}>website</Link>
+              </li>
+              <li>
+                <button className="logout-button" onClick={handleLogout}>
+                  Logout
+                </button>
               </li>
             </ul>
           </nav>
@@ -126,6 +148,15 @@ function Home() {
                   <p>No User Activity data available</p>
                 )}
               </div>
+            </div>
+            <div className="user-details">
+              <h2>Logged in User Details</h2>
+              <p>
+                <strong>Name:</strong> {data?.username}
+              </p>
+              <p>
+                <strong>Email:</strong> {data?.useremail}
+              </p>
             </div>
           </div>
           <CustomSnackbar

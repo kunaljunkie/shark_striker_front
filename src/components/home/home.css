@@ -246,3 +246,39 @@ body, html {
     height: auto;
   }
 }
+
+.logout-button {
+  background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 300%;
+}
+
+.logout-button:hover {
+  background-color: #ff1a1a;
+}
+
+.user-details {
+  background-color: #f4f4f4;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-details h2 {
+  margin-bottom: 15px;
+  font-size: 24px;
+}
+
+.user-details p {
+  margin: 5px 0;
+  font-size: 18px;
+}
+
+

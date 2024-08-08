@@ -76,6 +76,8 @@ function LoginForm() {
       try {
         const response = await apiPost('login', { email, password });
         localStorage.setItem("userid", response.user._id);
+        localStorage.setItem("email", response.user.email);
+        localStorage.setItem("name", response.user.name);
         localStorage.setItem("token", response.token);
         localStorage.setItem("refreshtoken", response.refreshToken);
 
